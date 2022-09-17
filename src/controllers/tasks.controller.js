@@ -1,9 +1,9 @@
 
 import * as taskService from '../services/task.service.js'
 
-export const getAllTasks = async (req, res) => {
+export const getAllTasks = (req, res) => {
   try {
-    const allTasks = await taskService.getAllTasks()
+    const allTasks = taskService.getAllTasks()
     res.json({ status: 'ok', data: allTasks })
   } catch (error) {
     res
@@ -12,7 +12,7 @@ export const getAllTasks = async (req, res) => {
   }
 }
 
-export const getOneTask = async (req, res) => {
+export const getOneTask = (req, res) => {
   const {
     params: { taskId }
   } = req
@@ -21,8 +21,8 @@ export const getOneTask = async (req, res) => {
     return res
       .status(400)
       .json({
-        status: 'OK',
-        data: { error: "Parameter ':workoutId' can not be empty" }
+        status: 'FAILED',
+        data: { error: "Parameter ':taskId' can not be empty" }
       })
   }
 
@@ -69,8 +69,28 @@ export const createNewTask = async (req, res) => {
   }
 }
 
-export const deleteOneTask = (req, res) => {
-  res.json('deleting a task')
+export const deleteOneTask = async (req, res) => {
+  const {
+    params: { taskId }
+  } = req
+
+  if (!taskId) {
+    return res
+      .status(400)
+      .json({
+        status: 'FAILED',
+        data: { error: "Parameter ':taskId' can not be empty" }
+      })
+  }
+
+  try {
+    await taskService.deleteOneTask(taskId)
+    res.status(204).json({ status: 'OK' })
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .json({ status: 'FAILED', data: { error: error?.message || error } })
+  }
 }
 
 export const updateOneTask = (req, res) => {

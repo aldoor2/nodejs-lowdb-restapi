@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { getConnection } from '../database.js'
 
-export const getAllTasks = async () => {
+export const getAllTasks = () => {
   try {
     const tasks = getConnection().data.tasks
     return tasks
@@ -58,8 +58,24 @@ export const createNewTask = async (newTask) => {
   }
 }
 
-export const deleteOneTask = () => {
+export const deleteOneTask = async (taskId) => {
+  try {
+    const db = getConnection()
+    const { tasks } = db.data
 
+    const indexForDeletion = tasks.findIndex((task) => task.id === taskId)
+    if (indexForDeletion === -1) {
+      throw {
+        status: 400,
+        message: `Can't find task with the id '${taskId}'`
+      }
+    }
+
+    tasks.splice(indexForDeletion, 1)
+    await db.write()
+  } catch (error) {
+    throw { status: error?.status || 500, message: error?.message || error }
+  }
 }
 
 export const updateOneTask = () => {
