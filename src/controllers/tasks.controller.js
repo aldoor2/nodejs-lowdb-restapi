@@ -1,12 +1,39 @@
 
 import * as taskService from '../services/task.service.js'
 
-export const getAllTasks = (req, res) => {
-  res.json('getting all tasks')
+export const getAllTasks = async (req, res) => {
+  try {
+    const allTasks = await taskService.getAllTasks()
+    res.json({ status: 'ok', data: allTasks })
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .json({ status: 'FAILED', data: { error: error?.message || error } })
+  }
 }
 
-export const getOneTask = (req, res) => {
-  res.json('getting a task')
+export const getOneTask = async (req, res) => {
+  const {
+    params: { taskId }
+  } = req
+
+  if (!taskId) {
+    return res
+      .status(400)
+      .json({
+        status: 'OK',
+        data: { error: "Parameter ':workoutId' can not be empty" }
+      })
+  }
+
+  try {
+    const task = taskService.getOneTask(taskId)
+    res.json({ status: 'OK', data: task })
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .json({ status: 'FAILED', data: { error: error?.message || error } })
+  }
 }
 
 export const count = (req, res) => {
