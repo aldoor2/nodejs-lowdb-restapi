@@ -11,6 +11,7 @@ export async function createConnection() {
   const file = join(__dirname, '../db.json')
   const adapter = new JSONFile(file)
   db = new Low(adapter)
+  console.log("🟢 ~ file: database.js ~ line 14 ~ createConnection ~ db", db)
 
   await db.read()
 
