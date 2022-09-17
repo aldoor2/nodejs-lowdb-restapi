@@ -3,7 +3,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 
 import { PORT } from './env.js'
-import tasksRoutes from '../routes/tasks.routes.js'
+import v1TasksRoutes from '../v1/routes/tasks.routes.js'
 
 // Initialization
 const app = express()
@@ -17,6 +17,6 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 // Routes
-app.use('/api/tasks', tasksRoutes)
+app.use('/api/tasks', v1TasksRoutes)
 
 export default app

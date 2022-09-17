@@ -1,4 +1,4 @@
-import app from './config/express.js'
+import app from './config/app.js'
 
 import { createConnection } from './database.js'
 
