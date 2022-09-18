@@ -36,8 +36,15 @@ export const getOneTask = (req, res) => {
   }
 }
 
-export const count = (req, res) => {
-  res.json('counting tasks')
+export const countTasks = (req, res) => {
+  try {
+    const totalTasks = taskService.countTasks()
+    res.json({ status: 'OK', data: { totalTasks } })
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .json({ status: 'FAILED', data: { error: error?.message || error } })
+  }
 }
 
 export const createNewTask = async (req, res) => {

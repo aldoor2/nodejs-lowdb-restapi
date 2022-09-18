@@ -6,7 +6,7 @@ const router = Router()
 
 router
   .get('/', tasksController.getAllTasks)
-  .get('/count', tasksController.count)
+  .get('/count', tasksController.countTasks)
   .get('/:taskId', tasksController.getOneTask)
   .post('/', tasksController.createNewTask)
   .delete('/:taskId', tasksController.deleteOneTask)

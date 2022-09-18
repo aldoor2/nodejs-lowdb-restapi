@@ -81,8 +81,9 @@ export const deleteOneTask = async (taskId) => {
 export const updateOneTask = async (taskId, changes) => {
   try {
     const db = getConnection()
+    const { tasks } = db.data
 
-    const taskFound = db.data.tasks.find(t => t.id === taskId)
+    const taskFound = tasks.find(t => t.id === taskId)
     if (!taskFound) {
       throw {
         status: 400,
@@ -90,7 +91,7 @@ export const updateOneTask = async (taskId, changes) => {
       }
     }
 
-    const isAlreadyAdded = db.data.tasks.findIndex((t) => t.title === changes.title) > -1
+    const isAlreadyAdded = tasks.findIndex((t) => t.title === changes.title) > -1
     if (isAlreadyAdded) {
       throw {
         status: 400,
@@ -104,11 +105,21 @@ export const updateOneTask = async (taskId, changes) => {
       updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
     }
 
-    const newTasks = db.data.tasks.map((t) => t.id === taskId ? updatedTask : t)
+    const newTasks = tasks.map((t) => t.id === taskId ? updatedTask : t)
     db.data.tasks = newTasks
     await db.write()
 
     return updatedTask
+  } catch (error) {
+    throw { status: error?.status || 500, message: error?.message || error }
+  }
+}
+
+export const countTasks = () => {
+  try {
+    const db = getConnection()
+    const totalTasks = db.data.tasks.length
+    return totalTasks
   } catch (error) {
     throw { status: error?.status || 500, message: error?.message || error }
   }
