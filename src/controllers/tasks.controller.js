@@ -4,7 +4,7 @@ import * as taskService from '../services/task.service.js'
 export const getAllTasks = (req, res) => {
   try {
     const allTasks = taskService.getAllTasks()
-    res.json({ status: 'ok', data: allTasks })
+    res.json({ status: 'OK', data: allTasks })
   } catch (error) {
     res
       .status(error?.status || 500)
@@ -89,7 +89,7 @@ export const deleteOneTask = async (req, res) => {
 
   try {
     await taskService.deleteOneTask(taskId)
-    res.status(204).json({ status: 'OK' })
+    res.sendStatus(204)
   } catch (error) {
     res
       .status(error?.status || 500)

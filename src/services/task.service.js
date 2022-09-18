@@ -50,7 +50,7 @@ export const createNewTask = async (newTask) => {
       updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
     }
 
-    tasks.push(taskToInsert)
+    db.data.tasks.push(taskToInsert)
     await db.write()
     return taskToInsert
   } catch (error) {
@@ -71,7 +71,7 @@ export const deleteOneTask = async (taskId) => {
       }
     }
 
-    tasks.splice(indexForDeletion, 1)
+    db.data.tasks.splice(indexForDeletion, 1)
     await db.write()
   } catch (error) {
     throw { status: error?.status || 500, message: error?.message || error }
