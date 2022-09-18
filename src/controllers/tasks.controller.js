@@ -77,10 +77,7 @@ export const deleteOneTask = async (req, res) => {
   if (!taskId) {
     return res
       .status(400)
-      .json({
-        status: 'FAILED',
-        data: { error: "Parameter ':taskId' can not be empty" }
-      })
+      .json({ status: 'FAILED', data: { error: "Parameter ':taskId' can not be empty" } })
   }
 
   try {
@@ -93,6 +90,21 @@ export const deleteOneTask = async (req, res) => {
   }
 }
 
-export const updateOneTask = (req, res) => {
-  res.json('updating a task')
+export const updateOneTask = async (req, res) => {
+  const { body, params: { taskId } } = req
+
+  if (!taskId) {
+    return res
+      .status(400)
+      .json({ status: 'FAILED', data: { error: "Parameter ':taskId' can not be empty" } })
+  }
+
+  try {
+    const updatedTask = await taskService.updateOneTask(taskId, body)
+    res.json({ status: 'OK', data: updatedTask })
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .json({ status: 'FAILED', data: { error: error?.message || error } })
+  }
 }

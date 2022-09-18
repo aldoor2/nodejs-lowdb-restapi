@@ -1,4 +1,3 @@
-import { debug } from 'console'
 import { Low, JSONFile } from 'lowdb'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'

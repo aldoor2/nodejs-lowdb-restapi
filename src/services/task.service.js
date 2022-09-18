@@ -78,6 +78,38 @@ export const deleteOneTask = async (taskId) => {
   }
 }
 
-export const updateOneTask = () => {
+export const updateOneTask = async (taskId, changes) => {
+  try {
+    const db = getConnection()
 
+    const taskFound = db.data.tasks.find(t => t.id === taskId)
+    if (!taskFound) {
+      throw {
+        status: 400,
+        message: `Can't find task with the id '${taskId}'`,
+      }
+    }
+
+    const isAlreadyAdded = db.data.tasks.findIndex((t) => t.title === changes.title) > -1
+    if (isAlreadyAdded) {
+      throw {
+        status: 400,
+        message: `Task with the title '${changes.title}' already exists`
+      }
+    }
+
+    const updatedTask = {
+      ...taskFound,
+      ...changes,
+      updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
+    }
+
+    const newTasks = db.data.tasks.map((t) => t.id === taskId ? updatedTask : t)
+    db.data.tasks = newTasks
+    await db.write()
+
+    return updatedTask
+  } catch (error) {
+    throw { status: error?.status || 500, message: error?.message || error }
+  }
 }
