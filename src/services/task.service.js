@@ -1,126 +1,51 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 
-import { getConnection } from '../database.js'
+import * as Task from '../models/Task.js'
 
 export const getAllTasks = () => {
   try {
-    const tasks = getConnection().data.tasks
-    return tasks
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
-  }
+    const allTasks = Task.getAllTasks()
+    return allTasks
+  } catch (error) { throw error }
 }
 
 export const getOneTask = (taskId) => {
   try {
-    const db = getConnection()
-    const { tasks } = db.data
-
-    const taskFound = tasks.find((task) => task.id === taskId)
-    if (!taskFound) {
-      throw {
-        status: 400,
-        message: `Can't find task with the id '${taskId}'`
-      }
-    }
-
+    const taskFound = Task.getOneTask(taskId)
     return taskFound
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
-  }
+  } catch (error) { throw error }
 }
 
 export const createNewTask = async (newTask) => {
-  try {
-    const db = getConnection()
-    const { tasks } = db.data
-
-    const isAlreadyAdded = tasks.findIndex((task) => task.title === newTask.title) > -1
-    if (isAlreadyAdded) {
-      throw {
-        status: 400,
-        message: `Task with the title: '${newTask.title}', already exists`
-      }
-    }
-
-    const taskToInsert = {
-      id: uuidv4(),
-      ...newTask,
-      createAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' }),
-      updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
-    }
-
-    db.data.tasks.push(taskToInsert)
-    await db.write()
-    return taskToInsert
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
+  const taskToInsert = {
+    id: uuid(),
+    ...newTask,
+    createAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' }),
+    updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
   }
+
+  try {
+    const createdTask = Task.createNewTask(taskToInsert)
+    return createdTask
+  } catch (error) { throw error }
 }
 
 export const deleteOneTask = async (taskId) => {
   try {
-    const db = getConnection()
-    const { tasks } = db.data
-
-    const indexForDeletion = tasks.findIndex((task) => task.id === taskId)
-    if (indexForDeletion === -1) {
-      throw {
-        status: 400,
-        message: `Can't find task with the id '${taskId}'`
-      }
-    }
-
-    db.data.tasks.splice(indexForDeletion, 1)
-    await db.write()
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
-  }
+    await Task.deleteOneTask(taskId)
+  } catch (error) { throw error }
 }
 
 export const updateOneTask = async (taskId, changes) => {
   try {
-    const db = getConnection()
-    const { tasks } = db.data
-
-    const taskFound = tasks.find(t => t.id === taskId)
-    if (!taskFound) {
-      throw {
-        status: 400,
-        message: `Can't find task with the id '${taskId}'`,
-      }
-    }
-
-    const isAlreadyAdded = tasks.findIndex((t) => t.title === changes.title) > -1
-    if (isAlreadyAdded) {
-      throw {
-        status: 400,
-        message: `Task with the title '${changes.title}' already exists`
-      }
-    }
-
-    const updatedTask = {
-      ...taskFound,
-      ...changes,
-      updateAt: new Date().toLocaleString('en-US', { timeZone: 'UTC' })
-    }
-
-    const newTasks = tasks.map((t) => t.id === taskId ? updatedTask : t)
-    db.data.tasks = newTasks
-    await db.write()
-
+    const updatedTask = await Task.updateOneTask(taskId, changes)
     return updatedTask
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
-  }
+  } catch (error) { throw error }
 }
 
 export const countTasks = () => {
   try {
-    const db = getConnection()
-    const totalTasks = db.data.tasks.length
+    const totalTasks = Task.countTasks()
     return totalTasks
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error }
-  }
+  } catch (error) { throw error }
 }

@@ -1,6 +1,5 @@
 import app from './config/app.js'
-
-import { createConnection } from './database.js'
+import { createConnection } from './config/db.js'
 
 createConnection()
 
